@@ -13,7 +13,10 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 request = youtube.search().list(
     part='snippet',
     maxResults=20,  # You can adjust the max results
-    q='your_keyword'
+    q='Desk setup 2023',
+    publishedAfter='2023-01-01T00:00:00Z',
+    relevanceLanguage = 'en',
+    type = 'video'
 )
 
 response = request.execute()
