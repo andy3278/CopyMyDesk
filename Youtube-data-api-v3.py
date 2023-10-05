@@ -12,9 +12,9 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 # Replace 'your_keyword' with the keyword you want to search
 request = youtube.search().list(
     part='snippet',
-    maxResults=20,  # You can adjust the max results
+    maxResults=20,  
     q='Desk setup 2023',
-    publishedAfter='2023-01-01T00:00:00Z',
+    publishedAfter='2023-01-01T00:00:00Z', # get only result after 2023
     relevanceLanguage = 'en',
     type = 'video'
 )
