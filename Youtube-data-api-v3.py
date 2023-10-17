@@ -17,8 +17,14 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 
 # Replace 'your_keyword' with the keyword you want to search
 
-max_results = 3
+max_results = 200
 serach_keyword = 'Desk setup 2023'
+
+video_id = []
+title = []
+channel = []
+release_date = []
+
 
 request = youtube.search().list(
     part='snippet',
@@ -28,9 +34,6 @@ request = youtube.search().list(
     relevanceLanguage = 'en',
     type = 'video'
 )
-
-response = request.execute()
-
 # for item in response['items']:
 #     print('Video ID: ', item['id']['videoId'])
 #     print('Title: ', item['snippet']['title'])
@@ -38,25 +41,26 @@ response = request.execute()
 #     print('---------------------------')
 
 # storage results in a dataframe
+# use for loop to get 50 reuslts each time
+for _ in range(max_results // 50):
+    response = request.execute()
+    next_page_token = response.get('nextPageToken')
 
-video_id = []
-title = []
-channel = []
-release_date = []
+    # append result in lists
+    for item in response['items']:
+        video_id.append(item['id']['videoId'])
+        title.append(item['snippet']['title'])
+        channel.append(item['snippet']['channelTitle'])
+        release_date.append(item['snippet']['publishedAt'])
 
-for item in response['items']:
-    video_id.append(item['id']['videoId'])
-    title.append(item['snippet']['title'])
-    channel.append(item['snippet']['channelTitle'])
-    release_date.append(item['snippet']['publishedAt'])
-
+# create dataframe
 df = pd.DataFrame({'video_id': video_id, 'title':title, 'channel':channel, 'release_date':release_date})
 
 # fotmat the release date
 date_formatter = lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d %H:%M:%S')
 df['release_date'] = df['release_date'].apply(date_formatter)
 
-
+print(df.shape)
 # get video transcript
 
 def get_transcripts(video_ids:str) -> list:
@@ -73,11 +77,19 @@ def get_transcripts(video_ids:str) -> list:
 # get transcript for each video_id in df
 df['transcript'] = get_transcripts(df['video_id'])
 
+# clean transcript column
+# if transcript is None, drop the row
+df = df.dropna(subset=['transcript'])
+print(df.shape)
+
 # get transcript text
-df['transcript_text'] = df['transcript'].apply(lambda x: ' '.join([item['text'] for item in x]))
+#df['transcript_text'] = df['transcript'].apply(lambda x: ' '.join([item['text'] for item in x]))
 # drop transcript column
-df = df.drop('transcript', axis=1)
+#df = df.drop('transcript', axis=1)
 # pass transcript text to openai api and get desk items from transcript
+
+# save df to csv first
+df.to_csv('youtube-desk-setup-raw-data.csv', index=False)
 
 def openai_api(text:str) -> str:
     # openai api
@@ -111,7 +123,7 @@ def openai_api(text:str) -> str:
     )
     return response.choices[0]['message']['content']
 
-df['items'] = df['transcript_text'].apply(openai_api)
+#df['items'] = df['transcript_text'].apply(openai_api)
 
 # save results to csv
-df.to_csv('youtube-desk-setup.csv', index=False)
+#df.to_csv('youtube-desk-setup.csv', index=False)
