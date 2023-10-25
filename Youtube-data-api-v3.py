@@ -46,6 +46,15 @@ for _ in range(max_results // 50):
     response = request.execute()
     next_page_token = response.get('nextPageToken')
 
+    request = youtube.search().list(
+        part='snippet',
+        maxResults=max_results,  
+        q=serach_keyword,
+        publishedAfter='2023-01-01T00:00:00Z', # get only result after 2023
+        relevanceLanguage = 'en',
+        type = 'video',
+        pageToken = next_page_token
+    )
     # append result in lists
     for item in response['items']:
         video_id.append(item['id']['videoId'])
