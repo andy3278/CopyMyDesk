@@ -6,7 +6,7 @@ import openai
 
 # read csv file
 
-df = pd.read_csv('youtube-desk-setup-raw-data.csv')
+df = pd.read_csv('./data/youtube-desk-setup-raw-data.csv')
 print(df.shape)
 
 # do some data cleaning
@@ -24,7 +24,7 @@ df['release_date'] = df['release_date'].apply(lambda x: datetime.strptime(x, '%Y
 df = df[df['release_date'] >= datetime(2023, 1, 1)]
 
 print(df.shape)
-df.to_csv('cleaned-youtube-desk-setup.csv', index=False)
+df.to_csv('./data/cleaned-youtube-desk-setup.csv', index=False)
 
 # openai api
 load_dotenv(find_dotenv())
