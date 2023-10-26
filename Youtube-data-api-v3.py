@@ -72,8 +72,8 @@ df['release_date'] = df['release_date'].apply(date_formatter)
 print(df.shape)
 # get video transcript
 
-count = 0
 def get_transcripts(video_ids:str) -> list:
+    count = 0
     transcripts = []
     for video_id in video_ids:
         print(f'Getting transcript for video {count}')
