@@ -17,7 +17,7 @@ df['transcript_text'] = df['transcript_text'].str.replace('[Applause]', '')
 
 # remove rows with less than 100 words
 df['word_count'] = df['transcript_text'].apply(lambda x: len(x.split()))
-df = df[df['word_count'] > 100]
+df = df[df['word_count'] > 500]
 
 # remove rows published before 2023
 df['release_date'] = df['release_date'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S'))
@@ -88,24 +88,24 @@ def query(payload):
 	return response.json()
 	
 
-for index, row in df.iterrows():
-    ans = {"answer": "NA"}
-    try: 
-        ans = query({
-        "inputs": {
-            "question": "What is Operating System used? Windows, MacOS or Linux?",
-            "context": row['transcript_text']
-        }
-    })
-    except:
-        pass
-    #df.loc[index, 'OS'] = ans['answer']
-    print(f"row : {index} done")
-    print(ans)
-    if index >= 30:
-        break
+# for index, row in df.iterrows():
+#     ans = {"answer": "NA"}
+#     try: 
+#         ans = query({
+#         "inputs": {
+#             "question": "What is Operating System used? Windows, MacOS or Linux?",
+#             "context": row['transcript_text']
+#         }
+#     })
+#     except:
+#         pass
+#     df.loc[index, 'OS'] = ans['answer']
+#     print(f"row : {index} done")
+#     print(ans)
+    # if index >= 300:
+    #     break
 #print(df['OS'].value_counts())
-df.to_csv('./data/after-LLM-data.csv', index=False)
+#df.to_csv('./data/after-LLM-data.csv', index=False)
 # output = query({
 # 	"inputs": {
 # 		"question": "What is my name?",
