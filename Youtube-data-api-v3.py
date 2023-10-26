@@ -61,7 +61,7 @@ for _ in range(max_results // 50):
         title.append(item['snippet']['title'])
         channel.append(item['snippet']['channelTitle'])
         release_date.append(item['snippet']['publishedAt'])
-
+    
 # create dataframe
 df = pd.DataFrame({'video_id': video_id, 'title':title, 'channel':channel, 'release_date':release_date})
 
@@ -72,9 +72,12 @@ df['release_date'] = df['release_date'].apply(date_formatter)
 print(df.shape)
 # get video transcript
 
+count = 0
 def get_transcripts(video_ids:str) -> list:
     transcripts = []
     for video_id in video_ids:
+        print(f'Getting transcript for video {count}')
+        count += 1
         try:
             transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
             transcripts.append(transcript)
@@ -103,4 +106,4 @@ df = df.drop('transcript', axis=1)
 # pass transcript text to openai api and get desk items from transcript
 
 # save df to csv first
-df.to_csv('youtube-desk-setup-raw-data.csv', index=False)
+df.to_csv('./data/youtube-desk-setup-raw-data.csv', index=False)
