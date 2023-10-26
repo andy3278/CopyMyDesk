@@ -74,3 +74,41 @@ import time
 
 # save results to csv
 #df.to_csv('youtube-desk-setup.csv', index=False)
+
+
+import requests
+hf_api_key = os.environ.get("HF_API_KEY")
+
+
+API_URL = "https://api-inference.huggingface.co/models/distilbert-base-cased-distilled-squad"
+headers = {"Authorization": f"Bearer {hf_api_key}"}
+
+def query(payload):
+	response = requests.post(API_URL, headers=headers, json=payload)
+	return response.json()
+	
+
+for index, row in df.iterrows():
+    ans = {"answer": "NA"}
+    try: 
+        ans = query({
+        "inputs": {
+            "question": "What is Operating System used? Windows, MacOS or Linux?",
+            "context": row['transcript_text']
+        }
+    })
+    except:
+        pass
+    #df.loc[index, 'OS'] = ans['answer']
+    print(f"row : {index} done")
+    print(ans)
+    if index >= 30:
+        break
+#print(df['OS'].value_counts())
+df.to_csv('./data/after-LLM-data.csv', index=False)
+# output = query({
+# 	"inputs": {
+# 		"question": "What is my name?",
+# 		"context": "My name is Clara and I live in Berkeley."
+# 	},
+# })
