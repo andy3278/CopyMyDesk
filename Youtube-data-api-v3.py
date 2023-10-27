@@ -57,10 +57,11 @@ for _ in range(max_results // 50):
     )
     # append result in lists
     for item in response['items']:
-        video_id.append(item['id']['videoId'])
-        title.append(item['snippet']['title'])
-        channel.append(item['snippet']['channelTitle'])
-        release_date.append(item['snippet']['publishedAt'])
+        if item['id']['videoId'] not in video_id:
+            video_id.append(item['id']['videoId'])
+            title.append(item['snippet']['title'])
+            channel.append(item['snippet']['channelTitle'])
+            release_date.append(item['snippet']['publishedAt'])
     
 # create dataframe
 df = pd.DataFrame({'video_id': video_id, 'title':title, 'channel':channel, 'release_date':release_date})
